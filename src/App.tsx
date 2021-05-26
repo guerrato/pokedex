@@ -1,11 +1,18 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import DTable from './components/DTable';
+// import container from './Infrastructure/Installer';
+// import { IPokemonService } from './services/interfaces/iPokemonService';
+// import SERVICE_IDENTIFIER from './Constants/Identifiers';
 
-function App() {
+const App = ()=> {
+  // const pokeService = container.get<IPokemonService>(SERVICE_IDENTIFIER.IPokemonService);
+
   return (
     <div className="App">
-      <header className="App-header">
+      <DTable></DTable>
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
@@ -18,7 +25,7 @@ function App() {
         >
           Learn React
         </a>
-      </header>
+      </header> */}
     </div>
   );
 }
