@@ -1,13 +1,14 @@
 import React from 'react';
 import './style.css'
 
-const DLink = ({...props})=> {
-    const key:string = props.key;
-    const url:string = props.url;
-    const text: string = props.text;
+type Props = {
+  href: string;
+  text: string;
+};
 
+const DLink = ({href, text}:Props) => {
     return (
-      <a className="detail_btn" key={key} href={url} target="_blank" rel="noopener noreferrer" >{text}</a>  
+      <a className="detail_btn" href={href} target="_blank" rel="noopener noreferrer">{text}</a>  
     );
 }
   

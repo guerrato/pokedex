@@ -5,6 +5,7 @@ import container from '../../Infrastructure/Installer';
 import { Pokemon } from '../../models/pokemon';
 import { IPokemonService } from '../../services/interfaces/iPokemonService';
 import DLink from '../DLink';
+import PokeSearch from '../PokeSearch';
 
 const columns = [
     {
@@ -28,7 +29,8 @@ const DTable = ()=> {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [totalRows, setTotalRows] = useState(0);
-    const [limit, setLimit] = useState(10); //perPage
+    const [limit, setLimit] = useState(10);
+    const [search, setSearch] = useState<string>('')
 
     const getPokemonId = (url: string) : number => {
         const splitedUrl = url.substr(0, url.length - 1).split('/');
@@ -40,16 +42,14 @@ const DTable = ()=> {
             const id = getPokemonId(pk.Url)
             return {
                 Id: id,
-                Name: pk.Name,
-                // Action: <a key={id} href="#">Details</a>
-                // Action: <DLink key={id} href={'#'} text={'Details'}/>
+                Name: pk.Name
             }
         });
 
         setData(poks)
     };
 
-    const fetchUsers = async (offset:number) => {
+    const fetchPokemons = async (offset:number) => {
         setLoading(true);
 
         const data = await pokeService.list(offset, limit)
@@ -59,7 +59,7 @@ const DTable = ()=> {
     };
 
     const handlePageChange = (offset:any) => {
-        fetchUsers(offset);
+        fetchPokemons(offset);
     };
 
     const handlePerRowsChange = async (newLimit:any, offset:number) => {
@@ -72,22 +72,35 @@ const DTable = ()=> {
         setLoading(false);
     };
 
+    const searchPokemon = async () => {
+        if (search.length === 0){
+            handlePageChange(10)
+        } else {
+            const data = await pokeService.get(search)
+            console.log(data)
+            mountTbData(data.Pokemons);
+        }
+    }
+
     useEffect(() => {
-        fetchUsers(1);
+        fetchPokemons(1);
     }, []);
   
     return (
-        <DataTable
-            title="Pokedex"
-            columns={columns}
-            data={data}
-            progressPending={loading}
-            pagination
-            paginationServer
-            paginationTotalRows={totalRows}
-            onChangeRowsPerPage={handlePerRowsChange}
-            onChangePage={handlePageChange}
-        />
+        <>
+            <PokeSearch text={search} onClick={searchPokemon} onChange={(e)=>setSearch(e.target.value)} />
+            <DataTable
+                title="Pokemon list"
+                columns={columns}
+                data={data}
+                progressPending={loading}
+                pagination
+                paginationServer
+                paginationTotalRows={totalRows}
+                onChangeRowsPerPage={handlePerRowsChange}
+                onChangePage={handlePageChange}
+            />
+        </>
     );
   }
   

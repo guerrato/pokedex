@@ -1,0 +1,15 @@
+.search_btn, .search_btn:active, .search_btn:visited, .search_btn:hover {
+    background-color: #ef5350;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 8px 14px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 3px 3px;
+    cursor: default;
+  }
+
