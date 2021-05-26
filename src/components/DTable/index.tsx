@@ -4,41 +4,56 @@ import SERVICE_IDENTIFIER from '../../Constants/Identifiers';
 import container from '../../Infrastructure/Installer';
 import { Pokemon } from '../../models/pokemon';
 import { IPokemonService } from '../../services/interfaces/iPokemonService';
+import DLink from '../DLink';
 
 const columns = [
-    // {
-    //   name: 'Pokemon Id',
-    //   selector: 'Name',
-    //   sortable: true,
-    // },
     {
-      name: 'Pokemon Name',
-      selector: 'Name',
-      sortable: true,
+      name: 'Pokemon Id',
+      selector: 'Id'
     },
     {
-      name: 'Pokemon Url',
-      selector: 'Url',
-      sortable: true,
+      name: 'Pokemon Name',
+      selector: 'Name'
+    },
+    {
+      name: '',
+      button: true,
+      cell: (row: any) => <DLink key={row.Id} href={'#'} text={'Details'} />,
     }
   ];
 
 const pokeService = container.get<IPokemonService>(SERVICE_IDENTIFIER.IPokemonService);
 
 const DTable = ()=> {
-    const [data, setData] = useState<Pokemon[]>([]);
+    const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [totalRows, setTotalRows] = useState(0);
     const [limit, setLimit] = useState(10); //perPage
 
+    const getPokemonId = (url: string) : number => {
+        const splitedUrl = url.substr(0, url.length - 1).split('/');
+        return parseInt(splitedUrl[splitedUrl.length - 1]);
+    }
+
+    const mountTbData = (data: Pokemon[]) : void => {
+        const poks = data.map((pk:Pokemon) => {
+            const id = getPokemonId(pk.Url)
+            return {
+                Id: id,
+                Name: pk.Name,
+                // Action: <a key={id} href="#">Details</a>
+                // Action: <DLink key={id} href={'#'} text={'Details'}/>
+            }
+        });
+
+        setData(poks)
+    };
+
     const fetchUsers = async (offset:number) => {
         setLoading(true);
 
-        // const response = await fetch(`https://reqres.in/api/users?page=${page}&per_page=${perPage}&delay=1`);
-        // const data = await response.json();
         const data = await pokeService.list(offset, limit)
-        console.log(data)
-        setData(data.Pokemons);
+        mountTbData(data.Pokemons);
         setTotalRows(data.Count);
         setLoading(false);
     };
@@ -49,12 +64,10 @@ const DTable = ()=> {
 
     const handlePerRowsChange = async (newLimit:any, offset:number) => {
         setLoading(true);
-        // const response = await fetch(`https://reqres.in/api/users?page=${page}&per_page=${newPerPage}&delay=1`);
-        // const data = await response.json();
 
         const data = await pokeService.list(offset, newLimit)
 
-        setData(data.Pokemons);
+        mountTbData(data.Pokemons);
         setLimit(newLimit);
         setLoading(false);
     };
@@ -62,19 +75,16 @@ const DTable = ()=> {
     useEffect(() => {
         fetchUsers(1);
     }, []);
-    
-    // 
   
     return (
         <DataTable
-            title="Users"
+            title="Pokedex"
             columns={columns}
             data={data}
             progressPending={loading}
             pagination
             paginationServer
             paginationTotalRows={totalRows}
-            selectableRows
             onChangeRowsPerPage={handlePerRowsChange}
             onChangePage={handlePageChange}
         />
