@@ -1,6 +1,9 @@
 import { injectable } from "inversify";
 import { Pokemon } from "../models/pokemon";
 import { PokemonList } from "../models/pokemonList";
+import { PokemonSprite } from "../models/pokemonSprite";
+import { PokemonStat } from "../models/pokemonStat";
+import { PokemonType } from "../models/pokemonType";
 import { IPokemonService } from "./interfaces/iPokemonService";
 
 @injectable()
@@ -29,7 +32,7 @@ export class PokemonService implements IPokemonService{
     async get(filter: string): Promise<PokemonList> {
         const response = await fetch(`${this.pokeAPI}pokemon/${filter}`);
         const data = await response.json();
-        console.log(data)
+
         const pokeList = new PokemonList();
 
         pokeList.Count = 1;
@@ -43,8 +46,35 @@ export class PokemonService implements IPokemonService{
         return pokeList;
     };
 
-    detail(id: number): Pokemon {
-        throw new Error("Method not implemented.");
+    async detail(id: number): Promise<Pokemon> {
+        const url = `${this.pokeAPI}pokemon/${id}/`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const types:PokemonType[] = data.types.map((tp:any) =>{
+            const pkT = new PokemonType();
+            pkT.Url = tp.type.url;
+            pkT.Name = tp.type.name;
+            pkT.Slot = parseInt(tp.slot);
+
+            return pkT;
+        });
+
+        const sprite = new PokemonSprite();
+        sprite.Default = data.sprites.front_default;
+        sprite.Shiny = data.sprites.front_shiny;
+
+        const stats = data.stats.map((st: any) => {
+            const stat = new PokemonStat();
+
+            stat.Name = st.stat.name;
+            stat.BaseStat = st.base_stat;
+            stat.Effort = st.effort;
+
+            return stat;
+        });
+
+        return new Pokemon(data.name, url, parseInt(data.id), types, sprite, stats);
     };
 
 }

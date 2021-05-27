@@ -1,21 +1,23 @@
+import { PokemonSprite } from "./pokemonSprite";
+import { PokemonStat } from "./pokemonStat";
+import { PokemonType } from "./pokemonType";
+
 export class Pokemon{
 
-    constructor(name: string, url: string, id?: number,  type?: string , normalSprite?:string, shinySprite?:string, stats?:string){
+    constructor(name: string, url: string, id?: number,  type?: Array<PokemonType>, sprite?: PokemonSprite, stats?: PokemonStat[]){
         this.Name = name;
         this.Url = url;
         this.Id = id;
         this.Type = type;
-        this.NormalSprite = normalSprite;
-        this.ShinySprite = shinySprite;
+        this.Sprite = sprite;
         this.Stats = stats;
     }
 
     public Id? : number;
     public Name : string;
-    public Type? : string;
+    public Type? : Array<PokemonType>;
     public Url: string;
-    public NormalSprite? : string;
-    public ShinySprite? : string;
-    public Stats? : string;
+    public Sprite? : PokemonSprite;
+    public Stats? : PokemonStat[];
 
 }

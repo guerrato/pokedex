@@ -2,13 +2,14 @@ import React from 'react';
 import './style.css'
 
 type Props = {
-  href: string;
+  id: string;
   text: string;
+  onClick?: (e:React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const DLink = ({href, text}:Props) => {
+const DLink = ({id, text, onClick}:Props) => {
     return (
-      <a className="detail_btn" href={href} target="_blank" rel="noopener noreferrer">{text}</a>  
+      <button type="button" className="detail_btn" id={id} onClick={onClick}>{text}</button>  
     );
 }
   

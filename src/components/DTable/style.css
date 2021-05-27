@@ -1,0 +1,12 @@
+.progress-bar {
+    background-color: #3761a8;
+}
+
+.title {
+    color: #3761a8;
+}
+
+.form-check-input:checked {
+    background-color: #feca1c;
+    border-color: #feca1c;
+}
