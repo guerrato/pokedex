@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Col, Container, Row, Form, ProgressBar } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
 import DataTable from 'react-data-table-component';
@@ -63,7 +63,7 @@ const DTable = ()=> {
         return parseInt(splitedUrl[splitedUrl.length - 1]);
     }
 
-    const mountTbData = (data: Pokemon[]) : void => {
+    const mountTbData = useCallback((data: Pokemon[]) : void => {
         const poks = data.map((pk:Pokemon) => {
             const id = getPokemonId(pk.Url)
             return {
@@ -73,16 +73,15 @@ const DTable = ()=> {
         });
 
         setData(poks)
-    };
+    }, []);
 
-    const fetchPokemons = async (offset:number) => {
+    const fetchPokemons = useCallback(async (offset:number) => {
         setLoading(true);
-
         const data = await pokeService.list(offset, limit)
         mountTbData(data.Pokemons);
         setTotalRows(data.Count);
         setLoading(false);
-    };
+    }, [limit, mountTbData])
 
     const handlePageChange = (offset:any) => {
         fetchPokemons(offset);
@@ -103,20 +102,19 @@ const DTable = ()=> {
             handlePageChange(10)
         } else {
             const data = await pokeService.get(search)
-            console.log(data)
             mountTbData(data.Pokemons);
         }
     }
 
     useEffect(() => {
-        fetchPokemons(1);
-    }, []);
-
+        fetchPokemons(1)
+    }, [fetchPokemons]);
 
     useEffect(() => {
         const fetchDetail = async (id:number) => {
             if (id !== 0){
                 const result = await pokeService.detail(id)
+                setIsDefaultImg(true)
                 setPokeInfo(result)
 
                 let ms:number = 0
